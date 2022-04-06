@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 
-import os
-import sys
+import socket
 
-path = os.getcwd() # по-умолчанию будем использовать текущую локальную директорию для поиска локальных репозиториев
+from time import sleep
 
-if len(sys.argv) >= 2:
-    path = sys.argv[1]
+urls = {"drive.google.com": socket.gethostbyname("drive.google.com"),
+        "mail.google.com": socket.gethostbyname("mail.google.com"), 
+        "google.com": socket.gethostbyname("google.com")}
 
-if not os.path.exists(path + "/.git"):
-    print(path + " - path is not a local repository!")
-    sys.exit()
+for key,value in urls.items():
+    print(key + " - " + value)
 
-
-bash_command = ["cd " + path, "git status"]
-result_os = os.popen(' && '.join(bash_command)).read()
-
-for result in result_os.split('\n'):
-    if result.find('modified') != -1:
-        prepare_result = result.replace('\tmodified:   ', '')
-        print(path + "\\" + prepare_result)
+while True:
+    sleep(5)
+    print("*************************")
+    for key,value in urls.items():
+        newvalue = socket.gethostbyname(key)
+        if value != newvalue:
+            print("[ERROR] " + key + " IP mismatch: " + value + " " + newvalue)
+        urls[key] = newvalue
+        print(key + " - " + newvalue)
