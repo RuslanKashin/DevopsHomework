@@ -1,0 +1,19 @@
+version: "2.4"
+  
+volumes:
+  pg_data: {}
+  pg_backup: {}
+  
+services:
+  postgres:
+    image: postgres:12
+    container_name: pgsql
+    environment:
+      POSTGRES_DB: "kashinpgdb"
+      POSTGRES_USER: "kashin"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - pg_backup:/var/lib/postgresql/backup
+    ports:
+      - "5432:5432"
