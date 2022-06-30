@@ -10,10 +10,11 @@ services:
     container_name: pgsql
     environment:
       POSTGRES_DB: "kashinpgdb"
-      POSTGRES_USER: "kashin"
+      POSTGRES_USER: "kashinpguser"
       POSTGRES_PASSWORD: "postgres"
     volumes:
       - pg_data:/var/lib/postgresql/data
       - pg_backup:/var/lib/postgresql/backup
     ports:
       - "5432:5432"
+    restart: always
