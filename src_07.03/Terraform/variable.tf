@@ -1,6 +1,6 @@
 variable "yc_token" {
   type        = string
-  default = "AQAAAAAD3***********"
+  default = "AQAAAAAD3p7tAATuwVm9jh3h7kBDv_eahqTD778"
 }
 
 variable "yc_zone" {
