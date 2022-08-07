@@ -10,17 +10,14 @@ terraform {
     endpoint   = "storage.yandexcloud.net"
     bucket     = "kashinbucket"
     region     = "ru-central1"
-    key        = "kashinbucket/terraform.tfstate"
-
-    access_key = "YCAJENu9daR3ADLNasLhPNb2H"
-    secret_key = "YCN56ENwAZQHwxHD55VlK15egipCIIi4pwiHufff"
+    key        = "trf/terraform.tfstate"
+    access_key = "YCAJE***"
+    secret_key = "YCN56EN***"
 
     skip_region_validation      = true
     skip_credentials_validation = true
   }
 }
-
-# <настройки провайдера с нашими переменными >
 
 provider "yandex" {
   token = var.yc_token
