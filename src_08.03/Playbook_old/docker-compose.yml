@@ -1,0 +1,10 @@
+version: "3.3"
+services:
+  elasticsearch:
+    image: pycontribs/ubuntu      
+    container_name: elastic_host
+    command: "sleep infinity"
+  kibana:
+    image: pycontribs/ubuntu
+    container_name: kibana_host
+    command: "sleep infinity"

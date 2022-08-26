@@ -1,0 +1,4 @@
+---
+elastic_version: "8.3.2"
+elastic_home: "/opt/elastic/{{ elastic_version }}"
+elastic_package: elasticsearch-{{ elastic_version }}-linux-x86_64.tar.gz
