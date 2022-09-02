@@ -1,0 +1,11 @@
+- name: test create file module
+  hosts: localhost
+  tasks:
+  - name: run the new module
+    my_own_module:
+      path: '/tmp/my_file2.txt'
+      content: 'My file2 content!'
+    register: testout
+  - name: dump test output
+    debug:
+      msg: '{{ testout }}'
