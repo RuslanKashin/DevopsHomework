@@ -165,7 +165,7 @@
 >   ```
 > 5. Выполнил `terraform init`
 >   ```shell
->   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform init --backend-config="access_key=YCAJEvsKzCBK_yAao8n09sOq-" --backend-config="secret_key=YCMBdXIRUkd_rG9x48PE361w0B3GiXuLceLTlGet"
+>   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform init --backend-config="access_key=..." --backend-config="secret_key=..."
 >   
 >   Initializing the backend...
 >   
