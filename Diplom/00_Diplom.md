@@ -124,7 +124,7 @@
 >   terraform {
 >     required_providers {
 >       yandex = {
->         source = "terraform-registry.storage.yandexcloud.net/yandex-cloud/yandex"
+>         source = "yandex-cloud/yandex"
 >       }
 >     }
 >     
@@ -240,7 +240,86 @@
 2. Настроены все upstream для выше указанных URL, куда они сейчас ведут на этом шаге не важно, позже вы их отредактируете и укажите верные значения.
 2. В браузере можно открыть любой из этих URL и увидеть ответ сервера (502 Bad Gateway). На текущем этапе выполнение задания это нормально!
 
-___
+_________________________________________
+> ## Результат:  
+> 1. Буду использовать DNS от YC. Домен делегирован под управление ns1.yandexcloud.net и ns2.yandexcloud.net.
+> ![img_9.png](img_9.png)
+> 2. Сервер на котором будет работать Nginx должен иметь внешний статический IP адрес, который будем создавать средствами terraform. Также средствами terraform создадим публичную зону DNS, и добавим в нее ресурсные записи.
+> - В **network.tf** добавил:
+>   ```
+>   resource "yandex_vpc_address" "kashinip" {
+>     name = "${terraform.workspace}-ip"
+>     external_ipv4_address {
+>       zone_id = "ru-central1-a"
+>     }
+>   }
+>   ```
+> - **dns.tf**:
+>   ```
+>   resource "yandex_dns_zone" "kashindiplomdns" {
+>     name        = "kashin-diplom-zone"
+>     description = "Diplom public zone"
+>     zone    = "kashin.store."
+>     public  = true
+>     depends_on = [
+>       yandex_vpc_subnet.subnetwork1,yandex_vpc_subnet.subnetwork2
+>     ]
+>   }
+>   
+>   resource "yandex_dns_recordset" "def" {
+>     zone_id = yandex_dns_zone.kashindiplomdns.id
+>     name    = "@.kashin.store."
+>     type    = "A"
+>     ttl     = 200
+>     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+>   }
+>   
+>   resource "yandex_dns_recordset" "gitlab" {
+>     zone_id = yandex_dns_zone.kashindiplomdns.id
+>     name    = "gitlab.kashin.store."
+>     type    = "A"
+>     ttl     = 200
+>     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+>   }
+>   
+>   resource "yandex_dns_recordset" "alertmanager" {
+>     zone_id = yandex_dns_zone.kashindiplomdns.id
+>     name    = "alertmanager.kashin.store."
+>     type    = "A"
+>     ttl     = 200
+>     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+>   }
+>   
+>   resource "yandex_dns_recordset" "grafana" {
+>     zone_id = yandex_dns_zone.kashindiplomdns.id
+>     name    = "grafana.kashin.store."
+>     type    = "A"
+>     ttl     = 200
+>     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+>   }
+>   
+>   resource "yandex_dns_recordset" "prometheus" {
+>     zone_id = yandex_dns_zone.kashindiplomdns.id
+>     name    = "prometheus.kashin.store."
+>     type    = "A"
+>     ttl     = 200
+>     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+>   }
+>   
+>   resource "yandex_dns_recordset" "www" {
+>     zone_id = yandex_dns_zone.kashindiplomdns.id
+>     name    = "www.kashin.store."
+>     type    = "A"
+>     ttl     = 200
+>     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+>   }
+>   ```
+> 3. Выполнил `terraform apply`. В YC создался статический внешний IP адрес и ресурсные записи в DNS.
+> ![img_10.png](img_10.png)
+> ![img_11.png](img_11.png)
+> 4. 
+
+_________________________________________
 ### Установка кластера MySQL
 
 Необходимо разработать Ansible роль для установки кластера MySQL.

@@ -1,3 +1,10 @@
+resource "yandex_vpc_address" "kashinip" {
+  name = "${terraform.workspace}-ip"
+  external_ipv4_address {
+    zone_id = "ru-central1-a"
+  }
+}
+
 resource "yandex_vpc_network" "network" {
   name = "${terraform.workspace}-net"
 }
