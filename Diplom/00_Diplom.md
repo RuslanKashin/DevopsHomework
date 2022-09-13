@@ -45,6 +45,13 @@
 1. У вас есть доступ к личному кабинету на сайте регистратора.
 2. Вы зарезистрировали домен и можете им управлять (редактировать dns записи в рамках этого домена).
 
+----------------------------------
+> ## Результат:  
+> Зарегистрировал домен `kashin.store`
+> 
+> ![img.png](img.png)
+
+----------------------------------
 ### Создание инфраструктуры
 
 Для начала необходимо подготовить инфраструктуру в YC при помощи [Terraform](https://www.terraform.io/).
@@ -77,7 +84,137 @@
 1. Terraform сконфигурирован и создание инфраструктуры посредством Terraform возможно без дополнительных ручных действий.
 2. Полученная конфигурация инфраструктуры является предварительной, поэтому в ходе дальнейшего выполнения задания возможны изменения.
 
----
+----------------------------------
+> ## Результат:  
+> 1. Установил свежую версию Terraform
+>   ```shell
+>   ruslan@ruslan-notebook:~$ terraform -v
+>   Terraform v1.2.9
+>   on linux_amd64
+>   ```
+> 2. Создал сервисный аккаунт с ролью `editor`.
+> ![img_2.png](img_2.png)
+> Сгенерировал в файл ключ доступа
+>   ```
+>   ruslan@ruslan-notebook:~$ yc iam key create --service-account-name kashindiplom --output /home/ruslan/myData/DevOps/DevopsHomework/Diplom/terraform/key.json
+>   ```
+> 3. Подготовьте backend для Terraform: Создал S3 bucket в YC аккаунте.
+> ![img_1.png](img_1.png)
+> 4. Написал конфигурацию terraform для создания VPC с подсетями в разных зонах доступности.
+>   - **network.tf**
+>   ```terraform
+>   resource "yandex_vpc_network" "network" {
+>     name = "${terraform.workspace}-net"
+>   }
+>   resource "yandex_vpc_subnet" "subnetwork1" {
+>     name           = "${terraform.workspace}-subnet1"
+>     zone           = "ru-central1-a"
+>     network_id     = yandex_vpc_network.network.id
+>     v4_cidr_blocks = ["192.168.10.0/24"]
+>   }
+>   resource "yandex_vpc_subnet" "subnetwork2" {
+>     name           = "${terraform.workspace}-subnet2"
+>     zone           = "ru-central1-b"
+>     network_id     = yandex_vpc_network.network.id
+>     v4_cidr_blocks = ["192.168.20.0/24"]
+>   }
+>   ```
+>   - **provider.tf**
+>   ```terraform
+>   terraform {
+>     required_providers {
+>       yandex = {
+>         source = "terraform-registry.storage.yandexcloud.net/yandex-cloud/yandex"
+>       }
+>     }
+>     
+>     backend "s3" {
+>       endpoint   = "storage.yandexcloud.net"
+>       bucket     = "kashindiplombucket"
+>       region     = "ru-central1"
+>       key        = "terraform.tfstate"
+>   
+>       skip_region_validation      = true
+>       skip_credentials_validation = true
+>     }
+>   }
+>   
+>   provider "yandex" {
+>     service_account_key_file = "key.json"
+>     cloud_id  = var.yc_cloud_id
+>     folder_id = var.yc_folder_id
+>     zone = var.yc_zone
+>   }
+>   ```
+>   - **variable.tf**
+>   ```terraform
+>   variable "yc_zone" {
+>     type    = string
+>     default = "ru-central1-a"
+>   }
+>   
+>   variable "yc_cloud_id" {
+>     type    = string
+>     default = "b1g8iii5fc0rhcs2hhva"
+>   }
+>   
+>   variable "yc_folder_id" {
+>     type    = string
+>     default = "b1g0oq3l0v2i5d06afl2"
+>   }
+>   ```
+> 5. Выполнил `terraform init`
+>   ```shell
+>   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform init --backend-config="access_key=YCAJEvsKzCBK_yAao8n09sOq-" --backend-config="secret_key=YCMBdXIRUkd_rG9x48PE361w0B3GiXuLceLTlGet"
+>   
+>   Initializing the backend...
+>   
+>   Initializing provider plugins...
+>   - Finding latest version of terraform-registry.storage.yandexcloud.net/yandex-cloud/yandex...
+>   - Installing terraform-registry.storage.yandexcloud.net/yandex-cloud/yandex v0.72.0...
+>   - Installed terraform-registry.storage.yandexcloud.net/yandex-cloud/yandex v0.72.0 (self-signed, key ID E40F590B50BB8E40)
+>   
+>   Partner and community providers are signed by their developers.
+>   If you'd like to know more about provider signing, you can read about it here:
+>   https://www.terraform.io/docs/cli/plugins/signing.html
+>   
+>   Terraform has made some changes to the provider dependency selections recorded
+>   in the .terraform.lock.hcl file. Review those changes and commit them to your
+>   version control system if they represent changes you intended to make.
+>   
+>   Terraform has been successfully initialized!
+>   
+>   You may now begin working with Terraform. Try running "terraform plan" to see
+>   any changes that are required for your infrastructure. All Terraform commands
+>   should now work.
+>   
+>   If you ever set or change modules or backend configuration for Terraform,
+>   rerun this command to reinitialize your working directory. If you forget, other
+>   commands will detect it and remind you to do so if necessary.
+>   ```
+> 6. Создал два воркспейса stage и prod
+>   ```shell
+>   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform workspace list
+>   * default
+>   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform workspace new stage
+>   Created and switched to workspace "stage"!
+>   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform workspace new prod
+>   Created and switched to workspace "prod"!
+>   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform workspace select stage
+>   Switched to workspace "stage".
+>   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform workspace list
+>     default
+>     prod
+>   * stage
+>   ```
+> 7. Выполнил terraform plan, terraform apply в воркспейсе prod и stage. Проверил что создалось в Облаке (для каждого воркспейса создалась сеть и 2 подсети, в S3 bucket пишется состояние конфигурации terraform). Проверил корректность работы `terraform destroy` и `terraform apply`.
+![img_3.png](img_3.png)
+![img_4.png](img_4.png)
+![img_5.png](img_5.png)
+![img_6.png](img_6.png)
+![img_7.png](img_7.png)
+----------------------------------
+
 ### Установка Nginx и LetsEncrypt
 
 Необходимо разработать Ansible роль для установки Nginx и LetsEncrypt.
