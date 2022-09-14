@@ -163,9 +163,15 @@
 >     default = "b1g0oq3l0v2i5d06afl2"
 >   }
 >   ```
-> 5. Выполнил `terraform init`
+> 5. Создал файл **keyS3.conf** с таким содержанием:
+>   ```
+>   access_key = "..."
+>   secret_key = "..."
+>   ```
+>   Предварительно создал Статический ключ доступа в Сервисной роли в YC. Данные access_key и secret_key из него.
+> 5. Выполнил `terraform init -backend-config=keyS3.conf`
 >   ```shell
->   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform init --backend-config="access_key=..." --backend-config="secret_key=..."
+>   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform init -backend-config=keyS3.conf"
 >   
 >   Initializing the backend...
 >   
@@ -317,7 +323,30 @@ _________________________________________
 > 3. Выполнил `terraform apply`. В YC создался статический внешний IP адрес и ресурсные записи в DNS.
 > ![img_10.png](img_10.png)
 > ![img_11.png](img_11.png)
-> 4. 
+> 4. Создам сразу всю тербуемую инфраструктуру:
+>    * Main server (Nginx и LetsEncrypt)
+>      - Имя сервера: kashin.store  
+>      - Характеристики: 2vCPU, 2 RAM, External address (Public) и Internal address. 
+>    * MySQL cluster (2 сервера: Master/Slave):
+>      - Имена серверов: db01.kashin.store и db02.kashin.store  
+>      - Характеристики: 4vCPU, 4 RAM, Internal address. 
+>    * WordPress Server:
+>      - Имя сервера: app.kashin.store  
+>      - Характеристики: 4vCPU, 4 RAM, Internal address.
+>    * Gitlab и Gitlab-runner:
+>      - Имя сервера: gitlab.kashin.store и runner.kashin.store  
+>      - Характеристики: 4vCPU, 4 RAM, Internal address. 
+>    * Metrics Server (Prometheus, Alert Manager, Node Exporter и Grafana):
+>      - Имя сервера: monitoring.kashin.store  
+>      - Характеристики: 4vCPU, 4 RAM, Internal address.  
+> 
+>   Создал **servers.tf** и **workspaces.tf** (см. в директории terraform).  
+>   Для `stage` задал 20% мощности, для `prod` - 100%.  
+>   Результат после выполнения:
+>   ![img_13.png](img_13.png)
+> 5. Ansible роли для Nginx и LetsEncrypt нашел тут:  
+> https://github.com/geerlingguy/ansible-role-nginx  
+> https://github.com/geerlingguy/ansible-role-certbot  
 
 _________________________________________
 ### Установка кластера MySQL
