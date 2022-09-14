@@ -168,7 +168,9 @@
 >   access_key = "..."
 >   secret_key = "..."
 >   ```
->   Предварительно создал Статический ключ доступа в Сервисной роли в YC. Данные access_key и secret_key из него.
+>   
+>   Предварительно создал Статический ключ доступа в Сервисной роли в YC. Данные access_key и secret_key из него.  
+> 
 > 5. Выполнил `terraform init -backend-config=keyS3.conf`
 >   ```shell
 >   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform init -backend-config=keyS3.conf"
