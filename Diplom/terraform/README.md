@@ -7,17 +7,18 @@
      ```
      yc iam key create --service-account-name kashindiplom --output /home/ruslan/myData/DevOps/DevopsHomework/Diplom/terraform/key.json
      ```
-5. Создать в YC статический ключ доступа. Данные `access_key` и `secret_key` записываем в файл `keyS3.conf` и кладем его рядом с фалами `.tf`.
+5. Создать бакет в YC (Object Storage/Бакеты).
+6. Создать в YC статический ключ доступа. Данные `access_key` и `secret_key` записываем в файл `keyS3.conf` и кладем его рядом с фалами `.tf`.
    ```
+   bucket     = "..."
    access_key = "..."
    secret_key = "..."
    ```
-6. В файле `variable.tf` указываем 
+6. В файле `variables.tf` указываем 
    - актуальные id из YC (`yc_cloud_id`, `yc_folder_id`) - команда в CLI `yc config list`
    - имя домена для которого создается инфраструктура (`domain_name`, необходимо делегировать домен под управление `ns1.yandexcloud.net` и `ns2.yandexcloud.net`).
    - образ ОС устанавливаемый на создаваемые сервера (`image_id`) - команда в CLI `yc compute image list --folder-id standard-images`.
 7. Создаем два воркспейса `stage`(20% ресурса создаваемых серверов) и `prod`(100% ресурса создаваемыз серверов) и работаем в одном из них, для `default` сценарий не работает.
-8. В YC создать bucket. В файле `provider.tf` указать его имя `bucket = "..."`.
 
 ###  2. Запуск:
 1. ```

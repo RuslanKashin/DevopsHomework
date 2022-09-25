@@ -1,57 +1,63 @@
-resource "yandex_dns_zone" "kashindiplomdns" {
-  name        = "kashin-diplom-zone"
-  description = "Diplom public zone"
-  zone    = "kashin.store."
-  public  = true
-  depends_on = [
-    yandex_vpc_subnet.subnetwork1,yandex_vpc_subnet.subnetwork2
-  ]
+
+# Создаем публичную DNS зону 
+resource "yandex_dns_zone" "myvpc-zone" {
+  name             = "myvpc-public-zone"
+  zone             = "${var.my_domain}."
+  public           = true
 }
 
-resource "yandex_dns_recordset" "def" {
-  zone_id = yandex_dns_zone.kashindiplomdns.id
-  name    = "@.kashin.store."
+# Прописываем основную A-запись
+resource "yandex_dns_recordset" "a1" {
+  zone_id = yandex_dns_zone.myvpc-zone.id
+  name    = "${var.my_domain}."
   type    = "A"
-  ttl     = 200
-  data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+  ttl     = 90
+  data    = [yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address]
+  depends_on = [yandex_compute_instance.node01nginx]
 }
 
-resource "yandex_dns_recordset" "gitlab" {
-  zone_id = yandex_dns_zone.kashindiplomdns.id
-  name    = "gitlab.kashin.store."
+# Прописываем A-записи для доменов 3 уровня
+resource "yandex_dns_recordset" "a2" {
+  zone_id = yandex_dns_zone.myvpc-zone.id
+  name    = "www"
   type    = "A"
-  ttl     = 200
-  data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+  ttl     = 90
+  data    = [yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address]
+  depends_on = [yandex_compute_instance.node01nginx]
 }
 
-resource "yandex_dns_recordset" "alertmanager" {
-  zone_id = yandex_dns_zone.kashindiplomdns.id
-  name    = "alertmanager.kashin.store."
+resource "yandex_dns_recordset" "a3" {
+  zone_id = yandex_dns_zone.myvpc-zone.id
+  name    = "gitlab"
   type    = "A"
-  ttl     = 200
-  data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+  ttl     = 90
+  data    = [yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address]
+  depends_on = [yandex_compute_instance.node01nginx]
 }
 
-resource "yandex_dns_recordset" "grafana" {
-  zone_id = yandex_dns_zone.kashindiplomdns.id
-  name    = "grafana.kashin.store."
+resource "yandex_dns_recordset" "a4" {
+  zone_id = yandex_dns_zone.myvpc-zone.id
+  name    = "grafana"
   type    = "A"
-  ttl     = 200
-  data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+  ttl     = 90
+  data    = [yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address]
+  depends_on = [yandex_compute_instance.node01nginx]
 }
 
-resource "yandex_dns_recordset" "prometheus" {
-  zone_id = yandex_dns_zone.kashindiplomdns.id
-  name    = "prometheus.kashin.store."
+resource "yandex_dns_recordset" "a5" {
+  zone_id = yandex_dns_zone.myvpc-zone.id
+  name    = "prometheus"
   type    = "A"
-  ttl     = 200
-  data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+  ttl     = 90
+  data    = [yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address]
+  depends_on = [yandex_compute_instance.node01nginx]
 }
 
-resource "yandex_dns_recordset" "www" {
-  zone_id = yandex_dns_zone.kashindiplomdns.id
-  name    = "www.kashin.store."
+resource "yandex_dns_recordset" "a6" {
+  zone_id = yandex_dns_zone.myvpc-zone.id
+  name    = "alertmanager"
   type    = "A"
-  ttl     = 200
-  data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
+  ttl     = 90
+  data    = [yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address]
+  depends_on = [yandex_compute_instance.node01nginx]
 }

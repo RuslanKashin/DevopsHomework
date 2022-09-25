@@ -26,7 +26,7 @@
 > ## Результат 1 этапа:  
 > Зарегистрировал домен `kashin.store`
 > 
-> ![img.png](img.png)
+> ![img_1.png](img/img_1.png)
 
 ----------------------------------
 ## 2. Создание инфраструктуры
@@ -70,113 +70,25 @@
 >   on linux_amd64
 >   ```
 > 2. Создал сервисный аккаунт с ролью `editor`.
-> ![img_2.png](img_2.png)
+> ![img_2.png](img/img_2.png)
 > Сгенерировал в файл ключ доступа
 >   ```
 >   ruslan@ruslan-notebook:~$ yc iam key create --service-account-name kashindiplom --output /home/ruslan/myData/DevOps/DevopsHomework/Diplom/terraform/key.json
 >   ```
-> 3. Подготовьте backend для Terraform: Создал S3 bucket в YC аккаунте.
-> ![img_1.png](img_1.png)
+> 3. Подготовил backend для Terraform: Создал S3 bucket в YC аккаунте.
+> ![img_3.png](img/img_3.png)
 > 4. Написал конфигурацию terraform для создания VPC с подсетями в разных зонах доступности.
->   - **network.tf**
->   ```terraform
->   resource "yandex_vpc_network" "network" {
->     name = "${terraform.workspace}-net"
->   }
->   resource "yandex_vpc_subnet" "subnetwork1" {
->     name           = "${terraform.workspace}-subnet1"
->     zone           = "ru-central1-a"
->     network_id     = yandex_vpc_network.network.id
->     v4_cidr_blocks = ["192.168.10.0/24"]
->   }
->   resource "yandex_vpc_subnet" "subnetwork2" {
->     name           = "${terraform.workspace}-subnet2"
->     zone           = "ru-central1-b"
->     network_id     = yandex_vpc_network.network.id
->     v4_cidr_blocks = ["192.168.20.0/24"]
->   }
+> 5. Cоздал Статический ключ доступа в Сервисной роли в YC. Скопировал access_key и secret_key из него. Создал файл **keyS3.conf** с таким содержанием:
 >   ```
->   - **provider.tf**
->   ```terraform
->   terraform {
->     required_providers {
->       yandex = {
->         source = "yandex-cloud/yandex"
->       }
->     }
->     
->     backend "s3" {
->       endpoint   = "storage.yandexcloud.net"
->       bucket     = "kashindiplombucket"
->       region     = "ru-central1"
->       key        = "terraform.tfstate"
->   
->       skip_region_validation      = true
->       skip_credentials_validation = true
->     }
->   }
->   
->   provider "yandex" {
->     service_account_key_file = "key.json"
->     cloud_id  = var.yc_cloud_id
->     folder_id = var.yc_folder_id
->     zone = var.yc_zone
->   }
->   ```
->   - **variable.tf**
->   ```terraform
->   variable "yc_zone" {
->     type    = string
->     default = "ru-central1-a"
->   }
->   
->   variable "yc_cloud_id" {
->     type    = string
->     default = "b1g8iii5fc0rhcs2hhva"
->   }
->   
->   variable "yc_folder_id" {
->     type    = string
->     default = "b1g0oq3l0v2i5d06afl2"
->   }
->   ```
-> 5. Создал файл **keyS3.conf** с таким содержанием:
->   ```
+>   bucket     = "s3bucketkashindiplom"
 >   access_key = "..."
 >   secret_key = "..."
->   ```
->   
->   Предварительно создал Статический ключ доступа в Сервисной роли в YC. Данные access_key и secret_key из него.  
+>   ``` 
 > 
-> 5. Выполнил `terraform init -backend-config=keyS3.conf`
->   ```shell
->   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform init -backend-config=keyS3.conf"
->   
->   Initializing the backend...
->   
->   Initializing provider plugins...
->   - Finding latest version of terraform-registry.storage.yandexcloud.net/yandex-cloud/yandex...
->   - Installing terraform-registry.storage.yandexcloud.net/yandex-cloud/yandex v0.72.0...
->   - Installed terraform-registry.storage.yandexcloud.net/yandex-cloud/yandex v0.72.0 (self-signed, key ID E40F590B50BB8E40)
->   
->   Partner and community providers are signed by their developers.
->   If you'd like to know more about provider signing, you can read about it here:
->   https://www.terraform.io/docs/cli/plugins/signing.html
->   
->   Terraform has made some changes to the provider dependency selections recorded
->   in the .terraform.lock.hcl file. Review those changes and commit them to your
->   version control system if they represent changes you intended to make.
->   
->   Terraform has been successfully initialized!
->   
->   You may now begin working with Terraform. Try running "terraform plan" to see
->   any changes that are required for your infrastructure. All Terraform commands
->   should now work.
->   
->   If you ever set or change modules or backend configuration for Terraform,
->   rerun this command to reinitialize your working directory. If you forget, other
->   commands will detect it and remind you to do so if necessary.
->   ```
+> 5. Выполнил:
+>    ```shell
+>    terraform init -backend-config=keyS3.conf
+>    ```
 > 6. Создал два воркспейса stage и prod
 >   ```shell
 >   ruslan@ruslan-notebook:~/myData/DevOps/DevopsHomework/Diplom/terraform$ terraform workspace list
@@ -192,12 +104,11 @@
 >     prod
 >   * stage
 >   ```
-> 7. Выполнил terraform plan, terraform apply в воркспейсе prod и stage. Проверил что создалось в Облаке (для каждого воркспейса создалась сеть и 2 подсети, в S3 bucket пишется состояние конфигурации terraform). Проверил корректность работы `terraform destroy` и `terraform apply`.
-![img_3.png](img_3.png)
-![img_4.png](img_4.png)
-![img_5.png](img_5.png)
-![img_6.png](img_6.png)
-![img_7.png](img_7.png)
+> 7. Выполнил terraform plan, terraform apply в воркспейсе prod и stage. Проверил что создалось в Облаке (для каждого воркспейса создалась сеть и 2 подсети, в S3 bucket пишется состояние конфигурации terraform). Проверил корректность работы `terraform destroy` и `terraform apply`.  
+> Результат для `stage`:
+> ![img_4.png](img/img_4.png)
+> ![img_5.png](img/img_5.png)
+> ![img_6.png](img/img_6.png)
 ----------------------------------
 
 ## 3. Установка Nginx и LetsEncrypt
@@ -228,106 +139,43 @@
 _________________________________________
 > ## Результат 3 этапа:  
 > 1. Буду использовать DNS от YC. Домен делегирован под управление ns1.yandexcloud.net и ns2.yandexcloud.net.
-> ![img_9.png](img_9.png)
-> 2. Сервер на котором будет работать Nginx должен иметь внешний статический IP адрес, который будем создавать средствами terraform. Также средствами terraform создадим публичную зону DNS, и добавим в нее ресурсные записи.
-> - В **network.tf** добавил:
->   ```
->   resource "yandex_vpc_address" "kashinip" {
->     name = "${terraform.workspace}-ip"
->     external_ipv4_address {
->       zone_id = "ru-central1-a"
->     }
->   }
->   ```
-> - **dns.tf**:
->   ```
->   resource "yandex_dns_zone" "kashindiplomdns" {
->     name        = "kashin-diplom-zone"
->     description = "Diplom public zone"
->     zone    = "kashin.store."
->     public  = true
->     depends_on = [
->       yandex_vpc_subnet.subnetwork1,yandex_vpc_subnet.subnetwork2
->     ]
->   }
->   
->   resource "yandex_dns_recordset" "def" {
->     zone_id = yandex_dns_zone.kashindiplomdns.id
->     name    = "@.kashin.store."
->     type    = "A"
->     ttl     = 200
->     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
->   }
->   
->   resource "yandex_dns_recordset" "gitlab" {
->     zone_id = yandex_dns_zone.kashindiplomdns.id
->     name    = "gitlab.kashin.store."
->     type    = "A"
->     ttl     = 200
->     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
->   }
->   
->   resource "yandex_dns_recordset" "alertmanager" {
->     zone_id = yandex_dns_zone.kashindiplomdns.id
->     name    = "alertmanager.kashin.store."
->     type    = "A"
->     ttl     = 200
->     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
->   }
->   
->   resource "yandex_dns_recordset" "grafana" {
->     zone_id = yandex_dns_zone.kashindiplomdns.id
->     name    = "grafana.kashin.store."
->     type    = "A"
->     ttl     = 200
->     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
->   }
->   
->   resource "yandex_dns_recordset" "prometheus" {
->     zone_id = yandex_dns_zone.kashindiplomdns.id
->     name    = "prometheus.kashin.store."
->     type    = "A"
->     ttl     = 200
->     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
->   }
->   
->   resource "yandex_dns_recordset" "www" {
->     zone_id = yandex_dns_zone.kashindiplomdns.id
->     name    = "www.kashin.store."
->     type    = "A"
->     ttl     = 200
->     data    = [yandex_vpc_address.kashinip.external_ipv4_address[0].address]
->   }
->   ```
+> ![img_7.png](img/img_7.png)
+> 2. Сервер на котором будет работать Nginx должен иметь внешний статический IP адрес, чтобы можно было останавливать ВМ и включать когда нужно, для экономии средств в облаке. IP создал средствами terraform. Также средствами terraform создадал публичную зону DNS, и добавим в нее ресурсные записи.
 > 3. Выполнил `terraform apply`. В YC создался статический внешний IP адрес и ресурсные записи в DNS.
-> ![img_10.png](img_10.png)
-> ![img_11.png](img_11.png)
+> ![img_8.png](img/img_8.png)
+> ![img_9.png](img/img_9.png)
 > 4. Создам сразу всю тербуемую инфраструктуру:
 >    * Main server (Nginx и LetsEncrypt)
->      - Имя сервера: kashin.store  
+>      - Имя сервера: vm01nginx  
 >      - Характеристики: 2vCPU, 2 RAM, External address (Public) и Internal address. 
 >    * MySQL cluster (2 сервера: Master/Slave):
->      - Имена серверов: db01.kashin.store и db02.kashin.store  
+>      - Имена серверов: vm02db01 и vm03db02  
 >      - Характеристики: 4vCPU, 4 RAM, Internal address. 
 >    * WordPress Server:
->      - Имя сервера: app.kashin.store  
+>      - Имя сервера: vm04app  
 >      - Характеристики: 4vCPU, 4 RAM, Internal address.
 >    * Gitlab и Gitlab-runner:
->      - Имя сервера: gitlab.kashin.store и runner.kashin.store  
+>      - Имя сервера: vm05gitlab и vm06runner  
 >      - Характеристики: 4vCPU, 4 RAM, Internal address. 
 >    * Metrics Server (Prometheus, Alert Manager, Node Exporter и Grafana):
->      - Имя сервера: monitoring.kashin.store  
+>      - Имя сервера: vm07monitoring  
 >      - Характеристики: 4vCPU, 4 RAM, Internal address.  
 > 
->   Создал **servers.tf** и **workspaces.tf** (см. в директории terraform).  
 >   Для `stage` задал 20% мощности, для `prod` - 100%.  
 >   Результат после выполнения на `stage`:
->   ![img_13.png](img_13.png)
-> 5. Ansible роли для Nginx и LetsEncrypt нашел тут:  
-> https://github.com/geerlingguy/ansible-role-nginx  
-> https://github.com/geerlingguy/ansible-role-certbot  
-
+>   ![img_10.png](img/img_10.png)
+> 5. Вся полученная инфраструктура передается в папку `ansible` в автоматически сгенерированном файле `inventory.ini`. Файл этот генерируем terraform с помощию `inventory.tf` команды которого отрабатывают после того как в облаке будут созданы все сервера.
+> 6. Выполнил роль `nginx` которая устанавливает `Nginx`, `Letsencrypt`, генерирует сертификаты для всех созданных доменов (если `workspace = stage`, то сертификаты тестовые), подкладывает файл с настроками.
+> 7. Также устанавливаем на этом сервере `Node_exporter`, и далее будем его устаналвливать на всех серверах для сбора метрик.
+> 8. Результат:
+> ![img_14.png](img/img_14.png)
+> ![img_15.png](img/img_15.png)
+> ![img_16.png](img/img_16.png)
+> ![img_17.png](img/img_17.png)
+> ![img_18.png](img/img_18.png)
+> ![img_19.png](img/img_19.png)
 _________________________________________
+
 ## 4. Установка кластера MySQL
 
 Необходимо разработать Ansible роль для установки кластера MySQL.
@@ -346,7 +194,14 @@ _________________________________________
 2. В кластере автоматически создаётся база данных c именем `wordpress`.
 3. В кластере автоматически создаётся пользователь `wordpress` с полными правами на базу `wordpress` и паролем `wordpress`.
 
-**Вы должны понимать, что в рамках обучения это допустимые значения, но в боевой среде использование подобных значений не приемлимо! Считается хорошей практикой использовать логины и пароли повышенного уровня сложности. В которых будут содержаться буквы верхнего и нижнего регистров, цифры, а также специальные символы!**
+_________________________________________
+> ## Результат 4 этапа:  
+> 1. Серверы уже были подготовлены на предыдущем этапе - `db01` и `db02`.
+> 2. Разработана роль устанавливающая MySQL и выполняющая все последующие настройки.
+> 3. В кластере автоматически создается база данных c именем `wordpress` и пользователь `wordpress` с полными правами на базу `wordpress` и паролем `wordpress`:
+> ![img_20.png](img/img_20.png)
+> 4. MySQL в режиме репликации:
+> ![img_21.png](img/img_21.png)
 
 ___
 ## 5. Установка WordPress
@@ -372,6 +227,13 @@ ___
 3. На сервере `you.domain` отредактирован upstream для выше указанного URL и он смотрит на виртуальную машину на которой установлен WordPress.
 4. В браузере можно открыть URL `https://www.you.domain` и увидеть главную страницу WordPress.
 ---
+> ## Результат 5 этапа:  
+> 1. Установлен `wordpress`.
+> ![img_22.png](img/img_22.png)
+> 2. Связан с БД созданной на предыдущем шаге.
+> 3. Если кластер выключен: ![img_23.png](img/img_23.png)
+> 4. Если кластер включен: ![img_24.png](img/img_24.png)
+---
 ## 6. Установка Gitlab CE и Gitlab Runner
 
 Необходимо настроить CI/CD систему для автоматического развертывания приложения при изменении кода.
@@ -392,8 +254,12 @@ ___
     - `https://gitlab.you.domain` (Gitlab)
 3. На сервере `you.domain` отредактирован upstream для выше указанного URL и он смотрит на виртуальную машину на которой установлен Gitlab.
 3. При любом коммите в репозиторий с WordPress и создании тега (например, v1.0.0) происходит деплой на виртуальную машину.
+---
+> ## Результат 6 этапа:  
+> 1. Установлен `Gitlab`.
+>
+---
 
-___
 ## 7. Установка Prometheus, Alert Manager, Node Exporter и Grafana
 
 Необходимо разработать Ansible роль для установки Prometheus, Alert Manager и Grafana.
@@ -417,22 +283,11 @@ ___
 4. На всех серверах установлен Node Exporter и его метрики доступны Prometheus.
 5. У Alert Manager есть необходимый [набор правил](https://awesome-prometheus-alerts.grep.to/rules.html) для создания алертов.
 2. В Grafana есть дашборд отображающий метрики из Node Exporter по всем серверам.
-3. В Grafana есть дашборд отображающий метрики из MySQL (*).
-4. В Grafana есть дашборд отображающий метрики из WordPress (*).
-
-*Примечание: дашборды со звёздочкой являются опциональными заданиями повышенной сложности их выполнение желательно, но не обязательно.*
 
 ---
-## Что необходимо для сдачи задания?
-
-1. Репозиторий со всеми Terraform манифестами и готовность продемонстрировать создание всех ресурсов с нуля.
-2. Репозиторий со всеми Ansible ролями и готовность продемонстрировать установку всех сервисов с нуля.
-3. Скриншоты веб-интерфейсов всех сервисов работающих по HTTPS на вашем доменном имени.
-  - `https://www.you.domain` (WordPress)
-  - `https://gitlab.you.domain` (Gitlab)
-  - `https://grafana.you.domain` (Grafana)
-  - `https://prometheus.you.domain` (Prometheus)
-  - `https://alertmanager.you.domain` (Alert Manager)
-4. Все репозитории рекомендуется хранить на одном из ресурсов ([github.com](https://github.com) или [gitlab.com](https://gitlab.com)).
-
+> ## Результат 7 этапа:  
+> 1. Установлены и настроены `Prometheus`, `Alert Manager` и `Grafana`.
+>
 ---
+
+![img.png](img.png)
