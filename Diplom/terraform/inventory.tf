@@ -32,46 +32,27 @@ resource "local_file" "inventory" {
     node06runner
     node07monitoring
 
-    [mydb:children]
+    [noproxyhosts:children]
     node02db01
     node03db02
-
+    node04app
+    node05gitlab
+    node06runner
+    node07monitoring
+    
     #
     # Vars for group and hosts
     #
 
     [node01nginx:vars]
-    my_domain = "${var.my_domain}"
     le_staging = "${local.le_staging[terraform.workspace]}"
 
-    [mydb:vars]
-    my_replicator_psw = "${var.my_replicator_psw}"
-
     [node02db01:vars]
-    ansible_ssh_common_args='-o ControlMaster=auto -o ControlPersist=10m -o ProxyCommand="ssh -W %h:%p -q ubuntu@${yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address}"'
     mysql_replication_role = "master"
 
     [node03db02:vars]
-    ansible_ssh_common_args='-o ControlMaster=auto -o ControlPersist=10m -o ProxyCommand="ssh -W %h:%p -q ubuntu@${yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address}"'
     mysql_replication_role = "slave"
 
-    [node04app:vars]
-    ansible_ssh_common_args='-o ControlMaster=auto -o ControlPersist=10m -o ProxyCommand="ssh -W %h:%p -q ubuntu@${yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address}"'
-    my_domain = "${var.my_domain}"
-
-    [node05gitlab:vars]
-    ansible_ssh_common_args='-o ControlMaster=auto -o ControlPersist=10m -o ProxyCommand="ssh -W %h:%p -q ubuntu@${yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address}"'
-    my_gitlab_psw = "${var.my_gitlab_psw}"
-    my_gitlab_runner = "${var.my_gitlab_runner}"
-    my_domain = "${var.my_domain}"
-
-    [node06runner:vars]
-    ansible_ssh_common_args='-o ControlMaster=auto -o ControlPersist=10m -o ProxyCommand="ssh -W %h:%p -q ubuntu@${yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address}"'
-    my_gitlab_runner = "${var.my_gitlab_runner}"
-    my_domain = "${var.my_domain}"
-
-    [node07monitoring:vars]
-    ansible_ssh_common_args='-o ControlMaster=auto -o ControlPersist=10m -o ProxyCommand="ssh -W %h:%p -q ubuntu@${yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address}"'
 
     [myallhosts:vars]
     my_domain = "${var.my_domain}"
@@ -82,6 +63,9 @@ resource "local_file" "inventory" {
     ip_node05gitlab = ${yandex_compute_instance.node05gitlab.network_interface.0.ip_address}
     ip_node06runner = ${yandex_compute_instance.node06runner.network_interface.0.ip_address}
     ip_node07monitoring = ${yandex_compute_instance.node07monitoring.network_interface.0.ip_address}
+    
+    [noproxyhosts:vars]
+    ansible_ssh_common_args='-o ControlMaster=auto -o ControlPersist=10m -o ProxyCommand="ssh -W %h:%p -q ubuntu@${yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address}"'
 
     EOT
   filename = "../ansible/inventory.ini"

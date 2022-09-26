@@ -20,21 +20,21 @@ variable "ubuntu-nat" {
 
 #
 # Токен для работы Gitlab c runner
-variable "my_gitlab_runner" {
-  default = "o9PZATGl+oOKkyN+06jRq0usrREGzHpV7cg26xJcYBk="
-}
+#variable "my_gitlab_runner" {
+#  default = "o9PZATGl+oOKkyN+06jRq0usrREGzHpV7cg26xJcYBk="
+#}
 
 #
 # Внутренний пароль для репликации между базами MySQL
-variable "my_replicator_psw" {
-  default = "QQQqqq_1"
-}
+#variable "my_replicator_psw" {
+#  default = "QQQqqq_1"
+#}
 
 
 #
 # Пароль для доступа к Gitlab от пользователя `root`
-variable "my_gitlab_psw" {
-  default = "QQQqqq_1"
-}
+#variable "my_gitlab_psw" {
+#  default = "QQQqqq_1"
+#}
 
 

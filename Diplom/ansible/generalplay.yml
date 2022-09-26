@@ -1,5 +1,5 @@
 ---
-#
+#1
 - hosts: nginx
   become:
     true
@@ -15,8 +15,8 @@
   vars:
     nginx_user: www-data
 
-#
-- hosts: mydb
+#2,3
+- hosts: db01 db02
   become:
     true
   become_method:
@@ -29,7 +29,7 @@
    - mysql
    - nodeexporter
 
-#
+#4
 - hosts: app
   become:
     true
@@ -43,7 +43,7 @@
    - wordpress
    - nodeexporter
 
-#
+#5
 - hosts: gitlab
   become:
     true
@@ -54,9 +54,11 @@
   remote_user:
     ubuntu
   roles:
+   - update
    - gitlab
+   - nodeexporter
 
-#
+#6
 - hosts: runner
   become:
     true
@@ -67,10 +69,11 @@
   remote_user:
     ubuntu
   roles:
+   - update
    - runner
    - nodeexporter
 
-#
+#7
 - hosts: monitoring
   become:
     true
