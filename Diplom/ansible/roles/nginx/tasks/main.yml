@@ -27,16 +27,23 @@
     path: /var/www/{{ my_domain }}
     state: directory
 
+- name: Get random email
+  set_fact:
+    randome_number: "{{ 1000 | random }}"
+#  run_once: yes
+   
 - name: Set LetsEncrypt variables
   set_fact:
-    letsencrypt_email: info@{{ my_domain }}
-# Check Temp sertificate!
+    letsencrypt_email: info{{randome_number}}@{{ my_domain }}
     letsencrypt_staging: "{{ le_staging }}"
 
-
+- name: "Print email"
+  debug:
+    msg: "{{ letsencrypt_email }}"
+    
 - name: Generate new certificate if one doesn't exist
   shell: >
-    certbot certonly --nginx --email '{{ letsencrypt_email }}'
+    certbot certonly --noninteractive --nginx --email '{{ letsencrypt_email }}'
     --agree-tos --no-eff-email -d '{{ my_domain }}'
     -d 'www.{{ my_domain }}' -d 'gitlab.{{ my_domain }}'
     -d 'grafana.{{ my_domain }}' -d 'prometheus.{{ my_domain }}'
