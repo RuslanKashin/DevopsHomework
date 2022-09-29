@@ -1,4 +1,19 @@
 ---
+#0
+- hosts: myallhosts
+  vars:
+    ansible_ssh_pipelining: false
+    ansible_ssh_transfer_method: smart
+  gather_facts: false
+  become:
+    true
+  become_method:
+    sudo
+  remote_user:
+    ubuntu
+  roles:
+   - prepare
+
 #1
 - hosts: nginx
   become:

@@ -228,11 +228,16 @@ ___
 4. В браузере можно открыть URL `https://www.you.domain` и увидеть главную страницу WordPress.
 ---
 > ## Результат 5 этапа:  
-> 1. Установлен `wordpress`.
+> 1. Установлен `Wordpress`.
 > ![img_22.png](img/img_22.png)
 > 2. Связан с БД созданной на предыдущем шаге.
-> 3. Если кластер выключен: ![img_23.png](img/img_23.png)
-> 4. Если кластер включен: ![img_24.png](img/img_24.png)
+> 3. Если кластер выключен: 
+> ![img_23.png](img/img_23.png)
+> 4. Если кластер включен: 
+> ![img_24.png](img/img_24.png)
+> ![img_31.png](img/img_31.png)
+> ![img_32.png](img/img_32.png)
+> ![img_33.png](img/img_33.png)
 ---
 ## 6. Установка Gitlab CE и Gitlab Runner
 
@@ -257,7 +262,22 @@ ___
 ---
 > ## Результат 6 этапа:  
 > 1. Установлен `Gitlab` и `Gitlab-runner`. Автоматически связаны по токену. Пользователь по умолчанию root, пароль в логе.
-> 2. 
+> ![img_29.png](img/img_29.png)
+> ![img_30.png](img/img_30.png)
+> 3. Интерфейс Gitlab доступен по https:
+> ![img.png](img.png)
+> ![img_4.png](img_4.png)
+> ![img_5.png](img_5.png)
+> 4. Создал на GitHub репозитоий с содержимым Wordpress.
+> 3. Создал новый проект в Gitlab загрузив его из репозитория.
+> ![img_1.png](img_1.png)
+> ![img_2.png](img_2.png)
+> 4. Создал .gitlab-ci.yml
+> ![img_3.png](img_3.png)
+> ![img_8.png](img_8.png)
+> 4. Добавляю Tag 1.0.0, проверяю результат:
+> ![img_9.png](img_9.png)
+> 5. 
 >
 ---
 
@@ -287,11 +307,16 @@ ___
 
 ---
 > ## Результат 7 этапа:  
-> 1. Установлены и настроены `Prometheus`, `Alert Manager` и `Grafana`.
->
+> 1. Установлены и настроены автоматически `Prometheus`, `Alert Manager` и `Grafana`.
+> 2. Prometheus:
+> ![img_50.png](img_50.png)
+> ![img_51.png](img_51.png)
+> ![img_52.png](img_52.png)
+> 3. Alert Manager:
+> ![img_53.png](img_53.png)
+> ![img_54.png](img_54.png)
+> 4. Grafana:
+> ![img_55.png](img_55.png)
+> ![img_56.png](img_56.png)
+> ![img_57.png](img_57.png)
 ---
-
-![img.png](img.png)
-![img_1.png](img_1.png)
-![img_2.png](img_2.png)
-![img_3.png](img_3.png)

@@ -79,7 +79,7 @@
     remote_src: yes
 
 - name: Create first site
-  command: sudo -u ubuntu -- wp core install --url="www.{{ my_domain }}" --title="Kashin.store" --admin_user="admin" --admin_password="admin" --admin_email="admin@test.site" --skip-email
+  command: sudo -u ubuntu -- wp core install --url="www.{{ my_domain }}" --title="Kashin.store" --admin_user="wordpress" --admin_password="wordpress" --admin_email="admin@test.site" --skip-email
   args:
     chdir: "/var/www/{{ my_domain }}"
 
