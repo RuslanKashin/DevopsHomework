@@ -65,7 +65,7 @@ resource "local_file" "inventory" {
     ip_node07monitoring = ${yandex_compute_instance.node07monitoring.network_interface.0.ip_address}
     
     [noproxyhosts:vars]
-    ansible_ssh_common_args='-o ControlMaster=auto -o ControlPersist=10m -o ProxyCommand="ssh -W %h:%p -q ubuntu@${yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address}"'
+    ansible_ssh_common_args='-o ControlMaster=auto -o ControlPersist=10m -o ProxyCommand="ssh -W %h:%p -q ruslan@${yandex_compute_instance.node01nginx.network_interface.0.nat_ip_address}"'
 
     EOT
   filename = "../ansible/inventory.ini"

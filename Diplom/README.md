@@ -265,19 +265,36 @@ ___
 > ![img_29.png](img/img_29.png)
 > ![img_30.png](img/img_30.png)
 > 3. Интерфейс Gitlab доступен по https:
-> ![img.png](img.png)
-> ![img_4.png](img_4.png)
-> ![img_5.png](img_5.png)
+> ![img_40.png](img/img_40.png)
+> ![img_41.png](img/img_41.png)
+> ![img_42.png](img/img_42.png)
 > 4. Создал на GitHub репозитоий с содержимым Wordpress.
 > 3. Создал новый проект в Gitlab загрузив его из репозитория.
-> ![img_1.png](img_1.png)
-> ![img_2.png](img_2.png)
+> ![img_43.png](img/img_43.png)
+> ![img_44.png](img/img_44.png)
 > 4. Создал .gitlab-ci.yml
-> ![img_3.png](img_3.png)
-> ![img_8.png](img_8.png)
-> 4. Добавляю Tag 1.0.0, проверяю результат:
-> ![img_9.png](img_9.png)
-> 5. 
+>   ```yaml
+>   stages:
+>     - deploy
+>   
+>   deploy-job:
+>     stage: deploy
+>     script:
+>       - echo "Some changes in repo detected..."
+>      - if [ "$CI_COMMIT_TAG" = "" ] ; then echo "No tag - no deploy :(";
+>         else 
+>           ssh -o StrictHostKeyChecking=no ruslan@app.kashin.store sudo chown ruslan /var/www/kashin.store -R;
+>           scp -q -o StrictHostKeyChecking=no -r $CI_PROJECT_DIR/wp/* ruslan@app.kashin.store:/var/www/kashin.store/;
+>           ssh -o StrictHostKeyChecking=no ruslan@app.kashin.store sudo chown www-data /var/www/kashin.store -R;
+>        fi
+>       - echo "The End"
+>   
+>   > ```
+> ![img_45.png](img/img_45.png)
+> ![img_46.png](img/img_46.png)
+> ![img_47.png](img/img_47.png)
+> 4. Добавляю Tag, проверяю результат:
+> ![img_48.png](img/img_48.png)
 >
 ---
 
@@ -309,14 +326,14 @@ ___
 > ## Результат 7 этапа:  
 > 1. Установлены и настроены автоматически `Prometheus`, `Alert Manager` и `Grafana`.
 > 2. Prometheus:
-> ![img_50.png](img_50.png)
-> ![img_51.png](img_51.png)
-> ![img_52.png](img_52.png)
+> ![img_50.png](img/img_50.png)
+> ![img_51.png](img/img_51.png)
+> ![img_52.png](img/img_52.png)
 > 3. Alert Manager:
-> ![img_53.png](img_53.png)
-> ![img_54.png](img_54.png)
+> ![img_53.png](img/img_53.png)
+> ![img_54.png](img/img_54.png)
 > 4. Grafana:
-> ![img_55.png](img_55.png)
-> ![img_56.png](img_56.png)
-> ![img_57.png](img_57.png)
+> ![img_55.png](img/img_55.png)
+> ![img_56.png](img/img_56.png)
+> ![img_57.png](img/img_57.png)
 ---

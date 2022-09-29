@@ -10,7 +10,7 @@
   become_method:
     sudo
   remote_user:
-    ubuntu
+    ruslan
   roles:
    - prepare
 
@@ -23,7 +23,7 @@
   become_user:
     root
   remote_user:
-    ubuntu
+    ruslan
   roles:
    - nginx
    - nodeexporter
@@ -39,7 +39,7 @@
   become_user:
     root
   remote_user:
-    ubuntu
+    ruslan
   roles:
    - mysql
    - nodeexporter
@@ -53,7 +53,7 @@
   become_user:
     root
   remote_user:
-    ubuntu
+    ruslan
   roles:
    - wordpress
    - nodeexporter
@@ -67,7 +67,7 @@
   become_user:
     root
   remote_user:
-    ubuntu
+    ruslan
   roles:
    - update
    - gitlab
@@ -82,7 +82,7 @@
   become_user:
     root
   remote_user:
-    ubuntu
+    ruslan
   roles:
    - update
    - runner
@@ -97,7 +97,7 @@
   become_user:
     root
   remote_user:
-    ubuntu
+    ruslan
   roles:
    - monitoring
    - nodeexporter

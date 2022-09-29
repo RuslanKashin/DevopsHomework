@@ -21,3 +21,30 @@
 - name: Install GitLab Runner (Windows)
   import_tasks: Windows.yml
   when: ansible_os_family == 'Windows' and not gitlab_runner_container_install
+  
+- name: Add gitlab-runner user to sudoers
+  user:
+    name: gitlab-runner
+    groups: sudo
+    append: yes
+    state: present
+
+- name: Allow gitlab-runner user to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^gitlab-runner'
+    line: 'gitlab-runner ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+
+- name: modify ssh StrictHostKeyChecking
+  lineinfile:
+    path: /etc/ssh/ssh_config
+    line: '    StrictHostKeyChecking no'
+
+- name: Create a 2048-bit SSH key for user gitlab-runner in ~gitlab-runner/.ssh/id_rsa
+  user:
+    name: gitlab-runner
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa

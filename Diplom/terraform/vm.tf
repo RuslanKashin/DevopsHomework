@@ -32,7 +32,8 @@ resource "yandex_compute_instance" "node01nginx" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+#    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    user-data = "${file("user.txt")}"
   }
 
 }
@@ -71,7 +72,8 @@ resource "yandex_compute_instance" "node02db01" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+#    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    user-data = "${file("user.txt")}"
   }
 }
 
@@ -108,7 +110,8 @@ resource "yandex_compute_instance" "node03db02" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+#    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    user-data = "${file("user.txt")}"
   }
 }
 
@@ -146,7 +149,8 @@ resource "yandex_compute_instance" "node04app" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+#    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    user-data = "${file("user.txt")}"
   }
 }
 
@@ -184,7 +188,8 @@ resource "yandex_compute_instance" "node05gitlab" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+#    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    user-data = "${file("user.txt")}"
   }
 }
 
@@ -221,7 +226,8 @@ resource "yandex_compute_instance" "node06runner" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+#    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    user-data = "${file("user.txt")}"
   }
 }
 
@@ -258,7 +264,8 @@ resource "yandex_compute_instance" "node07monitoring" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+#    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    user-data = "${file("user.txt")}"
   }
 }
 
